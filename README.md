@@ -1,6 +1,6 @@
 # YoutubeWatcher
  
-### [README in Chinese](./readme_ch.md)
+### [README in Chinese](./README_ch.md)
 
 #### Introduction
 
