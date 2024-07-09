@@ -4,49 +4,61 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports: 
-      - "8001:8000"
     volumes:
       - ./backend:/app
     depends_on:
       - db
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+    env_file:
+      - .env
+    networks:
+      - default_network
+
   db:
-    image: postgres:13
-    ports:
-      - "5432:5432"
+    image: mysql:9.0.0
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=mydb
+      - MYSQL_USER=myuser
+      - MYSQL_PASSWORD=mypassword
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - ./db:/var/lib/mysql
+    networks:
+      - default_network
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    ports:
-      - "8080:80"
     environment:
       - PMA_ARBITRARY=1
       - PMA_HOST=db
-      - PMA_USER=postgres
-      - PMA_PASSWORD=postgres
+      - PMA_USER=root
+      - PMA_PASSWORD=rootpassword
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - default_network
+
   line-bot:
     build:
       context: ./line-bot
       dockerfile: Dockerfile
-    ports:
-      - "8002:8000"
     volumes:
       - ./line-bot:/app
+    networks:
+      - default_network
+
   discord-bot:
     build:
       context: ./discord-bot
       dockerfile: Dockerfile
-    ports:
-      - "8003:8000"
     volumes:
       - ./discord-bot:/app
+    networks:
+      - default_network
+
   nginx:
     image: nginx:1.19
     ports:
@@ -57,10 +69,10 @@ services:
       - backend
       - line-bot
       - discord-bot
-networks:
-  default:
-    external:
-      name: ytwatcher
+    networks:
+      - default_network
 
-volumes:
-  postgres-data:
+networks:
+  default_network:
+    name: ytwatcher
+    external: true

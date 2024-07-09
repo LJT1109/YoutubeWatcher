@@ -27,6 +27,11 @@ This Docker Compose configuration is designed to create a versatile automated bo
     git clone <your-repository-url>
     cd <your-repository-directory>
     ```
+2. **Create docker network**:
+
+    ```bash
+    docker network create ytwatcher
+    ```
 
 2. **Build and Start the Services**:
 
